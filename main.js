@@ -35,11 +35,11 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDama
     this.Level = Level;
     this.EXP = EXP;
     this.MaxEXP = MaxEXP;
-    this.CoOrdinates = new coOrdinates(0,0);
-	this.MonDamage = MonDamage;
+    this.CoOrdinates = new coOrdinates(0, 0);
+    this.MonDamage = MonDamage;
 }
 
-var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0,0), 0);
+var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0, 0), 0);
 var monsters = [
     new actor("skeleton", 40, 40, 1, 15, 15, 0, 5),
     new actor("wolf", 60, 60, 1, 20, 20, 0, 15),
@@ -72,7 +72,10 @@ var weapon = [
 	new weapons("claymore", 20, weaponPrefix[0])
 ];
 
-
+var items = [
+    { Name: "painkiller", Inventory: 3, Value: 50 },
+    { Name: "adrenaline", Inventory: 1, Value: 150 },
+]
 
 function start() {
     writeToTextArea("Welcome to Our Text Based Adventure Game!");
@@ -80,17 +83,23 @@ function start() {
 }
 
 
-function action() {
+function action()
+{
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
-    if (count == 0) {
+    if (count == 0)
+    {
         currentMonsterHealth = chosenMonster.Health;
         count = 1;
-    } else {
+    } else
+    {
 
-        for (var i = 0; i < strArray.length; i++) {
-            for (var j = 0; j < weapon.length; j++) {
-                if (strArray[i] == weapon[j].Name) {
+        for (var i = 0; i < strArray.length; i++)
+        {
+            for (var j = 0; j < weapon.length; j++)
+            {
+                if (strArray[i] == weapon[j].Name)
+                {
                     userWeapon = strArray[i];
                     userWeaponDamage = weapon[j].Damage;
                 }
@@ -102,28 +111,44 @@ function action() {
                 if (strArray[i] == actionArray[j].Name) {
                     userAction = strArray[i];
                     userActionDamage = actionArray[j].DamageMulti;
-					currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
+                    currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
                     writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userWeaponDamage * userActionDamage);
-					writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
-					
+                    writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
+
                 }
             }
         }
-		
-	
-	
-	
-		if(newUser.Health >= 0 && currentMonsterHealth >= 0)
-		{
-			newUser.Health = newUser.Health - chosenMonster.MonDamage;
-			writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
-		}else
-		{
-			writeToTextArea("You Have Been Defeated!");
-		}	
-	
-        
-		for (var i = 0; i < strArray.length; i++) {
+        for (var i = 0; i < strArray.length; i++) {
+            for (var j = 0; j < items.length; j++) {
+                if (strArray[i] == items[j].Name) {
+                    if (items[j].Inventory == 0) {
+                        writeToTextArea(newUser.Name + " don't have " + items[j].Name + "s in your inventory");
+                    }
+                    else {
+                        newUser.Health = newUser.Health + items[j].Value;
+                        if (newUser.Health > newUser.MaxHealth) {
+                            newUser.Health = newUser.MaxHealth
+                        }
+                        items[j].Inventory--;
+                        writeToTextArea("You have used " + items[j].Name + "\n" + newUser.Name + " have gained " + items[j].Value + " HP\nYour current health is " + newUser.Health);
+                    }
+                }
+            }
+        }
+
+
+
+
+        if (newUser.Health >= 0 && currentMonsterHealth >= 0) {
+            newUser.Health = newUser.Health - chosenMonster.MonDamage;
+            writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
+        } else
+        {
+            writeToTextArea("You Have Been Defeated!");
+        }
+
+
+        for (var i = 0; i < strArray.length; i++) {
             if (strArray[i] == "check") {
                 for (var i = 0; i < strArray.length; i++) {
                     for (var j = 0; j < keywordArray.length; j++) {
@@ -156,10 +181,10 @@ function action() {
                 }
             }
         }
-		
-		
-        
-		// might want to move this text parser somewhere else as i dont know where to put it
+
+
+
+        // might want to move this text parser somewhere else as i dont know where to put it
 
         for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
         {
@@ -189,7 +214,7 @@ function action() {
             }
         }
 
-       
+
         if (currentMonsterHealth <= 0) {
             monstersKilled.push(chosenMonster.Name);
             newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
@@ -223,7 +248,8 @@ function spawnMonster() {
 
 }
 
-function userStatus() {
+function userStatus()
+{
     writeToTextArea("You have chosen to Check Status");
     writeToTextArea("Your Current level is: " + newUser.Level);
 
